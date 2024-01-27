@@ -1,29 +1,35 @@
 import React from "react";
+import { Link } from "react-router-dom";
+import "remixicon/fonts/remixicon.css";
 
 const Navbar = () => {
   return (
-    <nav className="bg-gray-800 p-4">
-      <div className="max-w-7xl mx-auto px-4">
-        <div className="flex justify-between items-center">
-          <div className="flex-shrink-0">
-            <a href="/" className="text-white font-bold text-xl">
-              Your Logo
-            </a>
-          </div>
-          <div className="flex space-x-4">
-            <a
-              href="/login"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Login
-            </a>
-            <a
-              href="/signup"
-              className="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium"
-            >
-              Sign Up
-            </a>
-          </div>
+    <nav className="bg-gray-800 py-4">
+      <div className="container mx-auto flex justify-between items-center">
+        <Link to="/" className="text-white text-lg font-semibold">
+          Home
+        </Link>
+
+        <div className="flex space-x-10">
+          <Link to="/shop" className="text-white">
+            Shop
+          </Link>
+          <Link to="/contact" className="text-white">
+            Contact
+          </Link>
+          <Link to="/blog" className="text-white">
+            Blog
+          </Link>
+        </div>
+        <div className="flex space-x-4">
+          <i className="ri-shopping-cart-line text-white cursor-pointer "></i>
+
+          <Link to="/login" className="text-white">
+            Login
+          </Link>
+          <Link to="/signup" className="text-white">
+            Signup
+          </Link>
         </div>
       </div>
     </nav>
