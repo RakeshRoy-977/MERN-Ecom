@@ -1,15 +1,16 @@
 const { validationResult } = require("express-validator");
 const ProductSchema = require("../Models/Product");
-const { json } = require("express");
 
 const addProduct = async (req, res) => {
   try {
-    //express validator
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({ errors: errors.array() });
-    }
-    const product = await ProductSchema.create(req.body);
+    // Create the product with image details
+    const productData = {
+      ...req.body,
+      image: req.file.filename,
+    };
+
+    const product = await ProductSchema.create(productData);
+
     return res.json(product);
   } catch (error) {
     return res.status(500).json(error.message);

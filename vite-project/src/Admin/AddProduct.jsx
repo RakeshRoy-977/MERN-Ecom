@@ -8,6 +8,7 @@ const AddProduct = () => {
   const [description, setDescription] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState(null);
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -16,31 +17,35 @@ const AddProduct = () => {
       return; // Prevent further execution
     }
 
-    //img to 64base
-    let reader = new FileReader();
-    reader.readAsDataURL(image);
-    reader.onload = async () => {
-      try {
-        //sending data to db after image conversion
-        const res = await axios.post("http://localhost:3003/api/product/add", {
-          name,
-          description,
-          price,
-          image: reader.result,
-        });
-        if (res.data) {
-          toast("Product added");
+    // Create a FormData object
+    const formData = new FormData();
+    formData.append("name", name);
+    formData.append("description", description);
+    formData.append("price", price);
+    formData.append("image", image);
+
+    try {
+      // Send FormData with image and data
+      const res = await axios.post(
+        "http://localhost:3003/api/product/add",
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      } catch (error) {
-        console.error("Error adding product:", error);
-        toast.error("Error adding product");
+      );
+
+      if (res.data) {
+        return toast("Product added");
+      } else if (!res.data) {
+        return toast("Not able to Product added");
       }
-    };
-    reader.onerror = (err) => {
-      console.error("Error converting image:", err);
-      toast.error("Error converting image");
-    };
+    } catch (error) {
+      console.error("Error adding product:", error);
+    }
   };
+
   return (
     <div className="max-w-lg mx-auto bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
       <form onSubmit={handleSubmit}>
