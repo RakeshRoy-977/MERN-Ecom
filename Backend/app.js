@@ -2,20 +2,23 @@ const express = require("express");
 require("dotenv").config();
 const cors = require("cors");
 const connectToDB = require("./db/mongoDB");
+const errorHandler = require("./middlewares/Err");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
 
-//Routes
-app.use("/ProductsImgs", express.static("ProductsImgs"));
+// Routes
 app.use("/api/product", require("./Routes/Product"));
 
-//connecting db
+// Error handling middleware
+app.use(errorHandler);
+
+// Connecting to the database
 connectToDB();
 
-//listing on PORT
+// Listening on PORT
 app.listen(process.env.PORT, () =>
-  console.log(`Server is Up at ${process.env.PORT}`)
+  console.log(`Server is up at ${process.env.PORT}`)
 );
