@@ -1,4 +1,5 @@
 const ProductSchema = require("../Models/Product");
+const ApiFeatures = require("../utils/ApiFeatures");
 const CustomError = require("../utils/Err_Class");
 
 const addProduct = async (req, res) => {
@@ -14,15 +15,21 @@ const addProduct = async (req, res) => {
   }
 };
 
+//get all the product
 const getAllProduct = async (req, res) => {
   try {
-    const product = await ProductSchema.find();
-    if (!product) {
-      return res.json("No Product Found");
+    const apiFeatures = new ApiFeatures(ProductSchema.find(), req.query)
+      .search()
+      .filter();
+    const products = await apiFeatures.query;
+
+    if (!products) {
+      throw new CustomError(404, "No products found");
     }
-    return res.json(product);
+
+    return res.json(products);
   } catch (error) {
-    return res.status(500).json(error.message);
+    return res.status(error.statusCode || 500).json({ error: error.message });
   }
 };
 

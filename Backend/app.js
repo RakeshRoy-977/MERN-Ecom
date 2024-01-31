@@ -11,6 +11,7 @@ app.use(express.json({ limit: "10mb" }));
 
 // Routes
 app.use("/api/product", require("./Routes/Product"));
+app.use("/api/auth", require("./Routes/User"));
 
 // Error handling middleware
 app.use(errorHandler);
