@@ -3,11 +3,13 @@ require("dotenv").config();
 const cors = require("cors");
 const connectToDB = require("./db/mongoDB");
 const errorHandler = require("./middlewares/Err");
+const cookieParser = require("cookie-parser");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json({ limit: "10mb" }));
+app.use(cookieParser());
 
 // Routes
 app.use("/api/product", require("./Routes/Product"));

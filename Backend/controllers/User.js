@@ -1,6 +1,7 @@
 const { json } = require("express");
 const UserModel = require("../Models/User");
 const CustomError = require("../utils/Err_Class");
+const sendToken = require("../utils/jwt");
 
 const addUser = async (req, res, next) => {
   try {
@@ -10,12 +11,8 @@ const addUser = async (req, res, next) => {
       email,
       password,
     });
-    const token = user.getJWT();
 
-    res.json({
-      success: true,
-      token,
-    });
+    sendToken(user, 201, res);
   } catch (error) {
     next(error);
   }
@@ -41,14 +38,39 @@ const LoginUser = async (req, res, next) => {
       throw new CustomError(401, "Please check Email/Password");
     }
 
-    const token = user.getJWT();
-    return res.json({
-      success: true,
-      token,
-    });
+    sendToken(user, 200, res);
   } catch (error) {
     next(error);
   }
 };
 
-module.exports = { addUser, LoginUser };
+//Logout end point
+const logOut = async (req, res, next) => {
+  try {
+    res.cookie("token", null, {
+      expires: new Date(Date.now()),
+      httpOnly: true,
+    });
+
+    res.json({
+      success: true,
+      message: `Logged Out`,
+    });
+  } catch (error) {}
+};
+
+//Reset Password Token
+const forgetPassword = async (req, res, next) => {
+  try {
+    const user = await UserModel.findOne({ email: req.body.email });
+
+    if (!user) throw new CustomError(404, "User not Found");
+
+    const resetToken = user.resetPassToken();
+    await user.save({});
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = { addUser, LoginUser, logOut };

@@ -4,6 +4,7 @@ const CustomError = require("../utils/Err_Class");
 
 const addProduct = async (req, res) => {
   try {
+    req.body.user = req.user.id;
     const product = await ProductSchema.create(req.body);
 
     return res.status(201).json({
