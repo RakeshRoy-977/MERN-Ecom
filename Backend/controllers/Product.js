@@ -95,10 +95,53 @@ const DeleteProduct = async (req, res) => {
     return res.status(500).json(error.message);
   }
 };
+
+// Product Rating
+const Raiting = async (req, res, next) => {
+  try {
+    const { rating, comment, productID } = req.body;
+    const review = {
+      user: req.user._id,
+      name: req.user.name,
+      rating: +rating,
+      comment,
+    };
+    const product = await ProductSchema.findById(productID);
+    const isReviewed = product.reviews.find(
+      (rev) => rev.user.toString() === req.user._id.toString()
+    );
+    if (isReviewed) {
+      product.reviews.forEach((rev) => {
+        if (rev.user.toString() === req.user._id.toString())
+          (rev.rating = rating), (rev.comment = comment);
+      });
+    } else {
+      product.reviews.push(review);
+      product.numOfReviews = product.reviews.length;
+    }
+    let avg = 0;
+
+    product.reviews.forEach((rev) => {
+      avg += rev.rating;
+    });
+
+    product.ratings = avg / product.reviews.length;
+
+    await product.save({ validateBeforeSave: false });
+
+    res.json({
+      success: true,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
 module.exports = {
   addProduct,
   getAllProduct,
   getSingleProduct,
   updateProduct,
   DeleteProduct,
+  Raiting,
 };

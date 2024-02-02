@@ -105,4 +105,57 @@ const forgetPassword = async (req, res, next) => {
   }
 };
 
-module.exports = { addUser, LoginUser, logOut, forgetPassword };
+//update Profile
+const updateProfile = async (req, res, next) => {
+  try {
+    const { name, email } = req.body;
+    const newData = {
+      name,
+      email,
+    };
+    //add cloud
+    if (!name || !email) throw new CustomError(400, "Please enter Details");
+
+    await UserModel.findByIdAndUpdate(req.user.id, newData, {
+      new: true,
+      runValidators: true,
+      useFindAndModify: true,
+    });
+    res.json({ success: true });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get All Users (ADMIN)
+const getAllUser = async (req, res, next) => {
+  try {
+    const users = await UserModel.find();
+
+    res.json({ success: true, users });
+  } catch (error) {
+    next(error);
+  }
+};
+
+//get User (ADMIN)
+const getUser = async (req, res, next) => {
+  try {
+    const user = await UserModel.findById(req.params.id);
+    if (!user) throw new CustomError(404, `User not Found!`);
+
+    res.json({ success: true, user });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports = {
+  addUser,
+  LoginUser,
+  logOut,
+  forgetPassword,
+  updateProfile,
+  getAllUser,
+  getUser,
+};
